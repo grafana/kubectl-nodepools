@@ -24,6 +24,11 @@ func main() {
 	cmd.AddCommand(listCmd())
 	cmd.AddCommand(nodesCmd())
 
+	// make list the default command
+	if c, _, err := cmd.Find(os.Args[1:]); err == nil && c.Use == cmd.Use {
+		cmd.SetArgs(append([]string{"list"}, os.Args[1:]...))
+	}
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	err := cmd.ExecuteContext(ctx)
 	cancel()
