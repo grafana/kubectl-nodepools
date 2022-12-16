@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strings"
 	"syscall"
 	"text/tabwriter"
 
@@ -139,22 +140,41 @@ func nodesCmd() *cobra.Command {
 				return err
 			}
 
-			var ns []string
+			var ns []corev1.Node
 
 			for _, n := range res.Items {
 				if np := findNodepool(n); np == args[0] {
-					ns = append(ns, n.Name)
+					ns = append(ns, n)
 				}
 			}
 
-			sort.Strings(ns)
+			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
+
+			fmt.Fprintln(w, "NODE\tSTATUS")
+
+			sort.Slice(ns, func(i, j int) bool { return ns[i].Name < ns[j].Name })
 			for _, n := range ns {
-				fmt.Println(n)
+				fmt.Fprintf(w, "%s\t%v\n", n.Name, nodeCondition(n))
 			}
 
-			return nil
+			return w.Flush()
 		},
 	}
 
 	return cmd
+}
+
+func nodeCondition(n corev1.Node) string {
+	var s strings.Builder
+
+	for _, c := range n.Status.Conditions {
+		if c.Status == corev1.ConditionTrue {
+			if s.Len() > 0 {
+				s.WriteRune(',')
+			}
+			s.WriteString(string(c.Type))
+		}
+	}
+
+	return s.String()
 }
