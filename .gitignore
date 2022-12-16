@@ -8,3 +8,5 @@
 *.pprof
 vendor/
 go.work
+
+dist/
