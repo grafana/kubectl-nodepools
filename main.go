@@ -85,7 +85,7 @@ func findNodepool(node corev1.Node) string {
 		}
 	}
 
-	return ""
+	return "-"
 }
 
 func listCmd() *cobra.Command {
