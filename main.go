@@ -94,7 +94,7 @@ func listCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			klient := ctx.Value("klient").(*kubernetes.Clientset)
+			klient := ctx.Value("klient").(kubernetes.Interface)
 
 			res, err := klient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 			if err != nil {
@@ -138,7 +138,7 @@ func nodesCmd() *cobra.Command {
 
 			ctx := cmd.Context()
 
-			klient := ctx.Value("klient").(*kubernetes.Clientset)
+			klient := ctx.Value("klient").(kubernetes.Interface)
 
 			res, err := klient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 			if err != nil {
