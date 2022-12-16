@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"sort"
 	"syscall"
+	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
@@ -94,23 +95,27 @@ func listCmd() *cobra.Command {
 				return err
 			}
 
-			nps := make(map[string]struct{})
+			nps := make(map[string]uint)
 			names := make([]string, 0, len(nps))
 
 			for _, n := range res.Items {
 				np := findNodepool(n)
-				if _, ok := nps[np]; !ok {
-					nps[np] = struct{}{}
+				nps[np] += 1
+				if nps[np] == 1 {
 					names = append(names, np)
 				}
 			}
 
+			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
+
+			fmt.Fprintln(w, "NAME\tNODES")
+
 			sort.Strings(names)
 			for _, n := range names {
-				fmt.Println(n)
+				fmt.Fprintf(w, "%s\t%5d\n", n, nps[n])
 			}
 
-			return nil
+			return w.Flush()
 		},
 	}
 
