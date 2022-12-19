@@ -89,6 +89,18 @@ func findNodepool(node corev1.Node) string {
 	return "-"
 }
 
+func instanceType(node corev1.Node) string {
+	t, ok := node.Labels["node.kubernetes.io/instance-type"]
+	if ok {
+		return t
+	}
+	t, ok = node.Labels["beta.kubernetes.io/instance-type"]
+	if ok {
+		return t
+	}
+	return "-"
+}
+
 type nodepool struct {
 	Name  string
 	Type  string
@@ -119,7 +131,7 @@ func listCmd() *cobra.Command {
 					names = append(names, npName)
 					np = &nodepool{
 						Name: npName,
-						Type: n.Labels["node.kubernetes.io/instance-type"],
+						Type: instanceType(n),
 					}
 					nps[npName] = np
 				}
