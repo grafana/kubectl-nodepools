@@ -88,6 +88,12 @@ func findNodepool(node corev1.Node) string {
 	return "-"
 }
 
+type nodepool struct {
+	Name  string
+	Type  string
+	Nodes uint
+}
+
 func listCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "list",
@@ -101,24 +107,32 @@ func listCmd() *cobra.Command {
 				return err
 			}
 
-			nps := make(map[string]uint)
+			nps := make(map[string]*nodepool)
 			names := make([]string, 0, len(nps))
 
 			for _, n := range res.Items {
-				np := findNodepool(n)
-				nps[np] += 1
-				if nps[np] == 1 {
-					names = append(names, np)
+				npName := findNodepool(n)
+
+				np, ok := nps[npName]
+				if !ok {
+					names = append(names, npName)
+					np = &nodepool{
+						Name: npName,
+						Type: n.Labels["node.kubernetes.io/instance-type"],
+					}
+					nps[npName] = np
 				}
+				np.Nodes += 1
 			}
 
 			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
 
-			fmt.Fprintln(w, "NAME\tNODES")
+			fmt.Fprintln(w, "NAME\tNODES\tTYPE")
 
 			sort.Strings(names)
 			for _, n := range names {
-				fmt.Fprintf(w, "%s\t%5d\n", n, nps[n])
+				np := nps[n]
+				fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, np.Type)
 			}
 
 			return w.Flush()
