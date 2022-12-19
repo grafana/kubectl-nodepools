@@ -75,7 +75,7 @@ func rootCmd() *cobra.Command {
 var providerNodepoolLabels = map[string]string{
 	"AWS":  "eks.amazonaws.com/nodegroup",
 	"GCP":  "cloud.google.com/gke-nodepool",
-	"AKS":  "agentpool",
+	"AKS":  "kubernetes.azure.com/agentpool",
 	"DOKS": "doks.digitalocean.com/node-pool-id",
 }
 
