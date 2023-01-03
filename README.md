@@ -8,7 +8,13 @@ Make sure your Go bin directory is in your `PATH`:
 export PATH="$(go env GOPATH)/bin:${PATH}"
 ```
 
-Then you can install it using the following command:
+You can install `kubectl-nodepools` using [`krew`](https://krew.sigs.k8s.io/) with the following command:
+
+```shell
+kubectl krew install nodepools
+```
+
+You can also install it using the following command:
 
 ```
 go install github.com/grafana/kubectl-nodepools@latest
