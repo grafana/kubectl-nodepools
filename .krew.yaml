@@ -34,13 +34,13 @@ spec:
       matchLabels:
         os: windows
         arch: amd64
-    {{addURIAndSha "https://github.com/grafana/kubectl-nodepools/releases/download/{{ .TagName }}/kubectl-nodepools_{{ .TagName }}_windows_amd64.tar.gz" .TagName }}
+    {{addURIAndSha "https://github.com/grafana/kubectl-nodepools/releases/download/{{ .TagName }}/kubectl-nodepools_{{ .TagName }}_windows_amd64.zip" .TagName }}
     bin: kubectl-nodepools
   - selector:
       matchLabels:
         os: windows
         arch: arm64
-    {{addURIAndSha "https://github.com/grafana/kubectl-nodepools/releases/download/{{ .TagName }}/kubectl-nodepools_{{ .TagName }}_windows_arm64.tar.gz" .TagName }}
+    {{addURIAndSha "https://github.com/grafana/kubectl-nodepools/releases/download/{{ .TagName }}/kubectl-nodepools_{{ .TagName }}_windows_arm64.zip" .TagName }}
     bin: kubectl-nodepools
   shortDescription: A kubectl plugin for listing node pools/groups
   description: |
