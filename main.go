@@ -70,6 +70,7 @@ You can also list nodes for a given node pool/group by name.`,
 
 			return nil
 		},
+		SilenceErrors: true,
 	}
 
 	flags := cmd.PersistentFlags()
