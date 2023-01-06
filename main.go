@@ -43,8 +43,14 @@ func rootCmd() *cobra.Command {
 	kflags := genericclioptions.NewConfigFlags(true)
 
 	cmd := &cobra.Command{
-		Use:   "kubectl nodepools",
+		Use:   "nodepools",
 		Short: "Read-only interaction with nodepools",
+		Long: `Read-only interaction with nodepools.
+
+List node pools/groups in the current cluster, alongside a count of
+how many nodes there are in each pool/group and their type.
+
+You can also list nodes for a given node pool/group by name.`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -109,7 +115,9 @@ type nodepool struct {
 
 func listCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "list",
+		Use:   "list",
+		Short: "List node pools/groups in current cluster",
+		Long:  `List node pools/groups in the current cluster, alongside a count of nodes and their type.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -157,7 +165,9 @@ func listCmd() *cobra.Command {
 
 func nodesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "nodes",
+		Use:   "nodes <name>",
+		Short: "List nodes in node pool/group",
+		Long:  `List nodes in the given node pool/group, alongside their status.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("need to pass a single nodepool name")
