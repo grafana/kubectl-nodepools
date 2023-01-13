@@ -19,6 +19,12 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
+var (
+	noHeaders bool
+	onlyName  bool
+	output    string
+)
+
 func main() {
 	cmd := rootCmd()
 	cmd.AddCommand(listCmd())
@@ -68,12 +74,20 @@ You can also list nodes for a given node pool/group by name.`,
 
 			cmd.SetContext(ctx)
 
+			if output != "" && output != "name" {
+				return fmt.Errorf("unrecognized --output type %s, only name is valid", output)
+			}
+
+			onlyName = output == "name"
+
 			return nil
 		},
 		SilenceErrors: true,
 	}
 
 	flags := cmd.PersistentFlags()
+	flags.BoolVar(&noHeaders, "no-headers", false, "Don't print headers (default print headers)")
+	flags.StringVarP(&output, "output", "o", "", "Output format. Only name.")
 	kflags.AddFlags(flags)
 
 	return cmd
@@ -149,12 +163,22 @@ func listCmd() *cobra.Command {
 
 			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
 
-			fmt.Fprintln(w, "NAME\tNODES\tTYPE")
+			if !noHeaders {
+				if onlyName {
+					fmt.Fprintln(w, "NAME")
+				} else {
+					fmt.Fprintln(w, "NAME\tNODES\tTYPE")
+				}
+			}
 
 			sort.Strings(names)
 			for _, n := range names {
 				np := nps[n]
-				fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, np.Type)
+				if onlyName {
+					fmt.Fprintln(w, np.Name)
+				} else {
+					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, np.Type)
+				}
 			}
 
 			return w.Flush()
@@ -193,11 +217,21 @@ func nodesCmd() *cobra.Command {
 
 			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
 
-			fmt.Fprintln(w, "NODE\tSTATUS")
+			if !noHeaders {
+				if onlyName {
+					fmt.Fprintln(w, "NODE")
+				} else {
+					fmt.Fprintln(w, "NODE\tSTATUS")
+				}
+			}
 
 			sort.Slice(ns, func(i, j int) bool { return ns[i].Name < ns[j].Name })
 			for _, n := range ns {
-				fmt.Fprintf(w, "%s\t%v\n", n.Name, nodeCondition(n))
+				if onlyName {
+					fmt.Fprintln(w, n.Name)
+				} else {
+					fmt.Fprintf(w, "%s\t%v\n", n.Name, nodeCondition(n))
+				}
 			}
 
 			return w.Flush()
