@@ -178,6 +178,7 @@ func listCmd() *cobra.Command {
 
 			return w.Flush()
 		},
+		Aliases: []string{"ls"},
 	}
 
 	return cmd
@@ -231,6 +232,7 @@ func nodesCmd() *cobra.Command {
 
 			return w.Flush()
 		},
+		Aliases: []string{"ns"},
 	}
 
 	return cmd
