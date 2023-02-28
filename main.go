@@ -156,7 +156,7 @@ func listCmd() *cobra.Command {
 				np.Nodes += 1
 			}
 
-			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
+			w := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', 0)
 
 			if !noHeaders {
 				if onlyName {
@@ -211,7 +211,7 @@ func nodesCmd() *cobra.Command {
 				}
 			}
 
-			w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
+			w := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', 0)
 
 			if !noHeaders {
 				if onlyName {
