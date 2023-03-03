@@ -23,6 +23,7 @@ var (
 	noHeaders bool
 	onlyName  bool
 	output    string
+	label     string
 )
 
 func main() {
@@ -83,6 +84,7 @@ You can also list nodes for a given node pool/group by name.`,
 	flags := cmd.PersistentFlags()
 	flags.BoolVar(&noHeaders, "no-headers", false, "Don't print headers (default print headers)")
 	flags.StringVarP(&output, "output", "o", "", "Output format. Only name.")
+	flags.StringVarP(&label, "label", "l", "", "Label to group nodes into pools with")
 	kflags.AddFlags(flags)
 
 	return cmd
@@ -95,7 +97,11 @@ var providerNodepoolLabels = map[string]string{
 	"DOKS": "doks.digitalocean.com/node-pool-id",
 }
 
-func findNodepool(node corev1.Node) string {
+func findNodepool(node corev1.Node, label string) string {
+	// Check the custom label first
+	if np, ok := node.Labels[label]; ok {
+		return np
+	}
 	for _, lbl := range providerNodepoolLabels {
 		if np, ok := node.Labels[lbl]; ok {
 			return np
@@ -142,7 +148,7 @@ func listCmd() *cobra.Command {
 			names := make([]string, 0, len(nps))
 
 			for _, n := range res.Items {
-				npName := findNodepool(n)
+				npName := findNodepool(n, label)
 
 				np, ok := nps[npName]
 				if !ok {
@@ -206,7 +212,7 @@ func nodesCmd() *cobra.Command {
 			var ns []corev1.Node
 
 			for _, n := range res.Items {
-				if np := findNodepool(n); np == args[0] {
+				if np := findNodepool(n, label); np == args[0] {
 					ns = append(ns, n)
 				}
 			}
