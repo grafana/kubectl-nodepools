@@ -35,3 +35,14 @@ kubectl nodepools nodes $nodepool
 ```
 
 Where `$nodepool` should be the name of an existing node pool.
+
+### Using a custom node pool label
+If your cluster uses a different label than the ones supported in code, you can pass a custom label using the `--label/-l` flag as in the following examples:
+
+```shell
+# list nodepools using a custom label
+kubectl nodepools list --label 'custom.domain.io/fancy-node-label'
+
+# list nodes with a nodepool using a custom label
+kubectl nodepools nodes -l 'custom.domain.io/fancy-node-label' $nodepool
+```
