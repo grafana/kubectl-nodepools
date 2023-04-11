@@ -19,6 +19,11 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
+const (
+	karpenterLabel      string = "karpenter.sh/provisioner-name"
+	karpenterNodeFmtStr string = "(Karpenter) %s"
+)
+
 var (
 	noHeaders bool
 	onlyName  bool
@@ -102,6 +107,12 @@ func findNodepool(node corev1.Node, label string) string {
 	if np, ok := node.Labels[label]; ok {
 		return np
 	}
+
+	// check for karpenter nodes
+	if np, ok := node.Labels[karpenterLabel]; ok {
+		return fmt.Sprintf(karpenterNodeFmtStr, np)
+	}
+
 	for _, lbl := range providerNodepoolLabels {
 		if np, ok := node.Labels[lbl]; ok {
 			return np
@@ -125,7 +136,7 @@ func instanceType(node corev1.Node) string {
 
 type nodepool struct {
 	Name  string
-	Type  string
+	Types map[string]bool
 	Nodes uint
 }
 
@@ -155,9 +166,13 @@ func listCmd() *cobra.Command {
 					names = append(names, npName)
 					np = &nodepool{
 						Name: npName,
-						Type: instanceType(n),
+						Types: map[string]bool{
+							instanceType(n): true,
+						},
 					}
 					nps[npName] = np
+				} else {
+					np.Types[instanceType(n)] = true
 				}
 				np.Nodes += 1
 			}
@@ -178,7 +193,12 @@ func listCmd() *cobra.Command {
 				if onlyName {
 					fmt.Fprintln(w, np.Name)
 				} else {
-					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, np.Type)
+					typeList := make([]string, 0, len(np.Types))
+					for k := range np.Types {
+						typeList = append(typeList, k)
+					}
+					sort.Strings(typeList)
+					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, strings.Join(typeList, ", "))
 				}
 			}
 
