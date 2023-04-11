@@ -46,3 +46,17 @@ kubectl nodepools list --label 'custom.domain.io/fancy-node-label'
 # list nodes with a nodepool using a custom label
 kubectl nodepools nodes -l 'custom.domain.io/fancy-node-label' $nodepool
 ```
+
+### Working with Karpenter
+Because [Karpenter](https://karpenter.sh/) does not provision node groups, it must be handled separately.
+By default, Karpenter nodes are listed in the format "(Karpenter) {Provisioner}".
+The [Provisioner](https://karpenter.sh/v0.27.1/concepts/provisioners/) refers to the provisioner that Karpenter used to create this particular node.
+In order to search for nodes from particular provisioners, use the `--label` flag.
+
+```shell
+# list nodes with karpenter included
+kubectl nodepools list
+
+# list nodes for a particular karpenter provisioner
+kubectl nodepools list --label 'karpenter.sh/provisioner-name' provisionerA
+```

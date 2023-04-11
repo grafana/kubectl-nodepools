@@ -19,6 +19,11 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
+const (
+	karpenterLabel      string = "karpenter.sh/provisioner-name"
+	karpenterNodeFmtStr string = "(Karpenter) %s"
+)
+
 var (
 	noHeaders bool
 	onlyName  bool
@@ -102,6 +107,12 @@ func findNodepool(node corev1.Node, label string) string {
 	if np, ok := node.Labels[label]; ok {
 		return np
 	}
+
+	// check for karpenter nodes
+	if np, ok := node.Labels[karpenterLabel]; ok {
+		return fmt.Sprintf(karpenterNodeFmtStr, np)
+	}
+
 	for _, lbl := range providerNodepoolLabels {
 		if np, ok := node.Labels[lbl]; ok {
 			return np
