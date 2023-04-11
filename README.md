@@ -58,5 +58,5 @@ In order to search for nodes from particular provisioners, use the `--label` fla
 kubectl nodepools list
 
 # list nodes for a particular karpenter provisioner
-kubectl nodepools list --label 'karpenter.sh/provisioner-name' provisionerA
+kubectl nodepools nodes --label 'karpenter.sh/provisioner-name' provisionerA
 ```
