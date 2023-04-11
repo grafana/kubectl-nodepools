@@ -194,11 +194,10 @@ func listCmd() *cobra.Command {
 					fmt.Fprintln(w, np.Name)
 				} else {
 					typeList := make([]string, len(np.Types))
-					i := 0
 					for k := range np.Types {
-						typeList[i] = k
-						i++
+						typeList = append(typeList, k)
 					}
+					sort.Strings(typeList)
 					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, strings.Join(typeList, ", "))
 				}
 			}
