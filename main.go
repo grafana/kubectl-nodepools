@@ -193,7 +193,7 @@ func listCmd() *cobra.Command {
 				if onlyName {
 					fmt.Fprintln(w, np.Name)
 				} else {
-					typeList := make([]string, len(np.Types))
+					typeList := []string{}
 					for k := range np.Types {
 						typeList = append(typeList, k)
 					}
