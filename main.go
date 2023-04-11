@@ -136,7 +136,7 @@ func instanceType(node corev1.Node) string {
 
 type nodepool struct {
 	Name  string
-	Type  string
+	Types map[string]bool
 	Nodes uint
 }
 
@@ -166,9 +166,13 @@ func listCmd() *cobra.Command {
 					names = append(names, npName)
 					np = &nodepool{
 						Name: npName,
-						Type: instanceType(n),
+						Types: map[string]bool{
+							instanceType(n): true,
+						},
 					}
 					nps[npName] = np
+				} else {
+					np.Types[instanceType(n)] = true
 				}
 				np.Nodes += 1
 			}
@@ -189,7 +193,13 @@ func listCmd() *cobra.Command {
 				if onlyName {
 					fmt.Fprintln(w, np.Name)
 				} else {
-					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, np.Type)
+					typeList := make([]string, len(np.Types))
+					i := 0
+					for k := range np.Types {
+						typeList[i] = k
+						i++
+					}
+					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, strings.Join(typeList, ", "))
 				}
 			}
 
