@@ -149,6 +149,8 @@ func listCmd() *cobra.Command {
 		Short: "List node pools/groups in current cluster",
 		Long:  `List node pools/groups in the current cluster, alongside a count of nodes and their type.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			warnEnvLabelUsage(cmd)
+
 			ctx := cmd.Context()
 
 			klient := ctx.Value("klient").(kubernetes.Interface)
@@ -223,6 +225,8 @@ func nodesCmd() *cobra.Command {
 				return errors.New("need to pass a single nodepool name")
 			}
 
+			warnEnvLabelUsage(cmd)
+
 			ctx := cmd.Context()
 
 			klient := ctx.Value("klient").(kubernetes.Interface)
@@ -280,4 +284,10 @@ func nodeCondition(n corev1.Node) string {
 	}
 
 	return s.String()
+}
+
+func warnEnvLabelUsage(cmd *cobra.Command) {
+	if label != "" && !cmd.Parent().PersistentFlags().Changed("label") {
+		fmt.Fprintf(os.Stderr, "Using custom label %q set by environment variable %s\n", label, customLabelEnvVar)
+	}
 }
