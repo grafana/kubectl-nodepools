@@ -22,6 +22,8 @@ import (
 const (
 	karpenterLabel      string = "karpenter.sh/provisioner-name"
 	karpenterNodeFmtStr string = "(Karpenter) %s"
+
+	customLabelEnvVar = "KUBE_NODEPOOLS_LABEL"
 )
 
 var (
@@ -89,7 +91,8 @@ You can also list nodes for a given node pool/group by name.`,
 	flags := cmd.PersistentFlags()
 	flags.BoolVar(&noHeaders, "no-headers", false, "Don't print headers (default print headers)")
 	flags.StringVarP(&output, "output", "o", "", "Output format. Only name.")
-	flags.StringVarP(&label, "label", "l", "", "Label to group nodes into pools with")
+	labelHelp := fmt.Sprintf("Label to group nodes into pools with; can be set via %s environment variable", customLabelEnvVar)
+	flags.StringVarP(&label, "label", "l", os.Getenv(customLabelEnvVar), labelHelp)
 	kflags.AddFlags(flags)
 
 	return cmd
