@@ -46,6 +46,10 @@ func main() {
 	}
 }
 
+type ctxKey string
+
+var kubeClientKey = ctxKey("klient")
+
 func rootCmd() *cobra.Command {
 	kflags := genericclioptions.NewConfigFlags(true)
 
@@ -71,7 +75,7 @@ You can also list nodes for a given node pool/group by name.`,
 				return err
 			}
 
-			ctx = context.WithValue(ctx, "klient", klient)
+			ctx = context.WithValue(ctx, kubeClientKey, klient)
 
 			cmd.SetContext(ctx)
 
@@ -148,7 +152,7 @@ func listCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			klient := ctx.Value("klient").(kubernetes.Interface)
+			klient := ctx.Value(kubeClientKey).(kubernetes.Interface)
 
 			res, err := klient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 			if err != nil {
@@ -222,7 +226,7 @@ func nodesCmd() *cobra.Command {
 
 			ctx := cmd.Context()
 
-			klient := ctx.Value("klient").(kubernetes.Interface)
+			klient := ctx.Value(kubeClientKey).(kubernetes.Interface)
 
 			res, err := klient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 			if err != nil {
