@@ -20,11 +20,11 @@ import (
 )
 
 const (
-	karpenterLabel      string = "karpenter.sh/provisioner-name"
 	karpenterNodeFmtStr string = "(Karpenter) %s"
-
-	customLabelEnvVar = "KUBE_NODEPOOLS_LABEL"
+	customLabelEnvVar   string = "KUBE_NODEPOOLS_LABEL"
 )
+
+var karpenterLabels []string = []string{"karpenter.sh/provisioner-name", "karpenter.sh/nodepool"}
 
 var (
 	noHeaders bool
@@ -116,8 +116,10 @@ func findNodepool(node corev1.Node, label string) string {
 	}
 
 	// check for karpenter nodes
-	if np, ok := node.Labels[karpenterLabel]; ok {
-		return fmt.Sprintf(karpenterNodeFmtStr, np)
+	for _, label := range karpenterLabels {
+		if np, ok := node.Labels[label]; ok {
+			return fmt.Sprintf(karpenterNodeFmtStr, np)
+		}
 	}
 
 	for _, lbl := range providerNodepoolLabels {
