@@ -9,13 +9,11 @@ import (
 )
 
 func TestNodeCondition(t *testing.T) {
-	testTable := []struct {
-		Name     string
+	testTable := map[string]struct {
 		Node     *corev1.Node
 		Expected string
 	}{
-		{
-			Name: "Basic Node",
+		"Basic Case": {
 			Node: &corev1.Node{
 				Status: corev1.NodeStatus{
 					Conditions: []corev1.NodeCondition{
@@ -30,21 +28,21 @@ func TestNodeCondition(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testTable {
-		actual := nodeCondition(*tc.Node)
-		assert.Equal(t, tc.Expected, actual, "fail")
+	for name, tc := range testTable {
+		t.Run(name, func(t *testing.T) {
+			actual := nodeCondition(*tc.Node)
+			assert.Equal(t, tc.Expected, actual, "failed")
+		})
 	}
 }
 
 func TestNodepoolLabels(t *testing.T) {
-	testTable := []struct {
-		Name        string
+	testTable := map[string]struct {
 		Node        *corev1.Node
 		CustomLabel string
 		Expected    string
 	}{
-		{
-			Name: "Basic Node - No matching label",
+		"no matching label": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -54,8 +52,7 @@ func TestNodepoolLabels(t *testing.T) {
 			},
 			Expected: "-",
 		},
-		{
-			Name: "Basic Node - Custom Label",
+		"custom label": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -66,8 +63,7 @@ func TestNodepoolLabels(t *testing.T) {
 			CustomLabel: "custom-label",
 			Expected:    "custom label",
 		},
-		{
-			Name: "Basic Node - AWS",
+		"AWS": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -77,8 +73,7 @@ func TestNodepoolLabels(t *testing.T) {
 			},
 			Expected: "test AWS",
 		},
-		{
-			Name: "Basic Node - GCP",
+		"GCP": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -88,8 +83,7 @@ func TestNodepoolLabels(t *testing.T) {
 			},
 			Expected: "test GCP",
 		},
-		{
-			Name: "Basic Node - AKS",
+		"AKS": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -99,8 +93,7 @@ func TestNodepoolLabels(t *testing.T) {
 			},
 			Expected: "test AKS",
 		},
-		{
-			Name: "Basic Node - DigitalOcean",
+		"DigitalOcean": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -110,8 +103,7 @@ func TestNodepoolLabels(t *testing.T) {
 			},
 			Expected: "test DigitalOcean",
 		},
-		{
-			Name: "Basic Node, v1alpha5",
+		"v1alpha5 API": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -121,8 +113,7 @@ func TestNodepoolLabels(t *testing.T) {
 			},
 			Expected: "(Karpenter) test v1alpha5",
 		},
-		{
-			Name: "Basic Node, v1beta1",
+		"v1beta1 API": {
 			Node: &corev1.Node{
 				ObjectMeta: v1.ObjectMeta{
 					Labels: map[string]string{
@@ -134,8 +125,10 @@ func TestNodepoolLabels(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testTable {
-		actual := findNodepool(*tc.Node, tc.CustomLabel)
-		assert.Equal(t, tc.Expected, actual, "fail")
+	for name, tc := range testTable {
+		t.Run(name, func(t *testing.T) {
+			actual := findNodepool(*tc.Node, tc.CustomLabel)
+			assert.Equal(t, tc.Expected, actual, "failed")
+		})
 	}
 }
