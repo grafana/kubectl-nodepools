@@ -54,14 +54,17 @@ kubectl nodepools nodes $nodepool
 
 ### Working with Karpenter
 Because [Karpenter](https://karpenter.sh/) does not provision node groups, it must be handled separately.
-By default, Karpenter nodes are listed in the format "(Karpenter) {Provisioner}".
-The [Provisioner](https://karpenter.sh/v0.27.1/concepts/provisioners/) refers to the provisioner that Karpenter used to create this particular node.
-In order to search for nodes from particular provisioners, use the `--label` flag.
+By default, Karpenter nodes are listed in the format "(Karpenter) {NodePool}".
+The [NodePool](https://karpenter.sh/docs/concepts/nodepools/) refers to the NodePool that Karpenter used to create this particular node.
+In order to search for nodes from particular NodePools, use the `--label` flag.
+
+**Note** 
+If using Karpenter v1alpha (<=0.32.x), Provisioners will be listed.  If using v1beta1+ (>v0.32.x), NodePools will be listed.
 
 ```shell
 # list nodes with karpenter included
 kubectl nodepools list
 
 # list nodes for a particular karpenter provisioner
-kubectl nodepools nodes --label 'karpenter.sh/provisioner-name' provisionerA
+kubectl nodepools nodes --label 'karpenter.sh/nodepool' NodePoolA
 ```
