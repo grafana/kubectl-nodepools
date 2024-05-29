@@ -24,7 +24,7 @@ const (
 	customLabelEnvVar   string = "KUBE_NODEPOOLS_LABEL"
 )
 
-var karpenterLabels []string = []string{"karpenter.sh/provisioner-name", "karpenter.sh/nodepool"}
+var karpenterLabels = []string{"karpenter.sh/provisioner-name", "karpenter.sh/nodepool"}
 
 var (
 	noHeaders bool
