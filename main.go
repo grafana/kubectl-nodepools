@@ -38,7 +38,7 @@ func main() {
 	cmd.AddCommand(listCmd())
 	cmd.AddCommand(nodesCmd())
 
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	err := cmd.ExecuteContext(ctx)
 	cancel()
 
@@ -145,7 +145,7 @@ func instanceType(node corev1.Node) string {
 
 type nodepool struct {
 	Name  string
-	Types map[string]bool
+	Types map[string]int
 	Nodes uint
 }
 
@@ -177,13 +177,13 @@ func listCmd() *cobra.Command {
 					names = append(names, npName)
 					np = &nodepool{
 						Name: npName,
-						Types: map[string]bool{
-							instanceType(n): true,
+						Types: map[string]int{
+							instanceType(n): 1,
 						},
 					}
 					nps[npName] = np
 				} else {
-					np.Types[instanceType(n)] = true
+					np.Types[instanceType(n)]++
 				}
 				np.Nodes += 1
 			}
@@ -205,8 +205,9 @@ func listCmd() *cobra.Command {
 					fmt.Fprintln(w, np.Name)
 				} else {
 					typeList := make([]string, 0, len(np.Types))
-					for k := range np.Types {
-						typeList = append(typeList, k)
+					for k, v := range np.Types {
+						typeWithCount := fmt.Sprintf("%s (%d)", k, v)
+						typeList = append(typeList, typeWithCount)
 					}
 					sort.Strings(typeList)
 					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, strings.Join(typeList, ", "))
