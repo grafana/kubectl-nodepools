@@ -19,7 +19,7 @@ jobs:
           go-version: 1.24
           cache: false
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@6e37040623d14330555c7be1603a9182cf92d32a # v1.5.1
+        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
         with:
           version: latest
           args: release --clean
