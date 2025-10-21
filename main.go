@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	karpenterNodeFmtStr string = "(Karpenter) %s"
+	karpenterNodePrefix string = "(Karpenter) "
 	customLabelEnvVar   string = "KUBE_NODEPOOLS_LABEL"
 )
 
@@ -118,7 +118,7 @@ func findNodepool(node corev1.Node, label string) string {
 	// check for karpenter nodes
 	for _, label := range karpenterLabels {
 		if np, ok := node.Labels[label]; ok {
-			return fmt.Sprintf(karpenterNodeFmtStr, np)
+			return karpenterNodePrefix + np
 		}
 	}
 
