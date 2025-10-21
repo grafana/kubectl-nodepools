@@ -243,10 +243,13 @@ func nodesCmd() *cobra.Command {
 				return err
 			}
 
-			var ns []corev1.Node
+			var (
+				ns   []corev1.Node
+				name = strings.TrimPrefix(args[0], karpenterNodePrefix)
+			)
 
 			for _, n := range res.Items {
-				if np := findNodepool(n, label); np == args[0] {
+				if np := findNodepool(n, label); strings.TrimPrefix(np, karpenterNodePrefix) == name {
 					ns = append(ns, n)
 				}
 			}
