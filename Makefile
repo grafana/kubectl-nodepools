@@ -1,9 +1,11 @@
 PKG ?= ./...
 
+TOOL = go tool -modfile=go.tool.mod
+
 checks:
 	go vet $(PKG)
-	go tool staticcheck $(PKG)
-	go tool golangci-lint run $(PKG)
+	$(TOOL) staticcheck $(PKG)
+	$(TOOL) golangci-lint run $(PKG)
 
 test:
 	go test $(PKG)
