@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	karpenterNodeFmtStr string = "(Karpenter) %s"
+	karpenterNodePrefix string = "(Karpenter) "
 	customLabelEnvVar   string = "KUBE_NODEPOOLS_LABEL"
 )
 
@@ -118,7 +118,7 @@ func findNodepool(node corev1.Node, label string) string {
 	// check for karpenter nodes
 	for _, label := range karpenterLabels {
 		if np, ok := node.Labels[label]; ok {
-			return fmt.Sprintf(karpenterNodeFmtStr, np)
+			return karpenterNodePrefix + np
 		}
 	}
 
@@ -243,10 +243,13 @@ func nodesCmd() *cobra.Command {
 				return err
 			}
 
-			var ns []corev1.Node
+			var (
+				ns   []corev1.Node
+				name = strings.TrimPrefix(args[0], karpenterNodePrefix)
+			)
 
 			for _, n := range res.Items {
-				if np := findNodepool(n, label); np == args[0] {
+				if np := findNodepool(n, label); strings.TrimPrefix(np, karpenterNodePrefix) == name {
 					ns = append(ns, n)
 				}
 			}
