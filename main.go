@@ -192,9 +192,9 @@ func listCmd() *cobra.Command {
 
 			if !noHeaders {
 				if onlyName {
-					fmt.Fprintln(w, "NAME")
+					fmt.Fprintln(w, "NAME") // nolint:errcheck
 				} else {
-					fmt.Fprintln(w, "NAME\tNODES\tTYPE")
+					fmt.Fprintln(w, "NAME\tNODES\tTYPE") // nolint:errcheck
 				}
 			}
 
@@ -202,7 +202,7 @@ func listCmd() *cobra.Command {
 			for _, n := range names {
 				np := nps[n]
 				if onlyName {
-					fmt.Fprintln(w, np.Name)
+					fmt.Fprintln(w, np.Name) // nolint:errcheck
 				} else {
 					typeList := make([]string, 0, len(np.Types))
 					for k, v := range np.Types {
@@ -210,7 +210,7 @@ func listCmd() *cobra.Command {
 						typeList = append(typeList, typeWithCount)
 					}
 					sort.Strings(typeList)
-					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, strings.Join(typeList, ", "))
+					fmt.Fprintf(w, "%s\t%5d\t%s\n", np.Name, np.Nodes, strings.Join(typeList, ", ")) // nolint:errcheck
 				}
 			}
 
@@ -258,18 +258,18 @@ func nodesCmd() *cobra.Command {
 
 			if !noHeaders {
 				if onlyName {
-					fmt.Fprintln(w, "NODE")
+					fmt.Fprintln(w, "NODE") // nolint:errcheck
 				} else {
-					fmt.Fprintln(w, "NODE\tSTATUS")
+					fmt.Fprintln(w, "NODE\tSTATUS") // nolint:errcheck
 				}
 			}
 
 			sort.Slice(ns, func(i, j int) bool { return ns[i].Name < ns[j].Name })
 			for _, n := range ns {
 				if onlyName {
-					fmt.Fprintln(w, n.Name)
+					fmt.Fprintln(w, n.Name) // nolint:errcheck
 				} else {
-					fmt.Fprintf(w, "%s\t%v\n", n.Name, nodeCondition(n))
+					fmt.Fprintf(w, "%s\t%v\n", n.Name, nodeCondition(n)) // nolint:errcheck
 				}
 			}
 
