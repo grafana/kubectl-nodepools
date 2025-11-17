@@ -1,3 +1,5 @@
+version: 2
+
 project_name: kubectl-nodepools
 
 before:
@@ -20,21 +22,22 @@ builds:
 
 archives:
   - id: kubectl-nodepools
-    builds:
+    ids:
     - kubectl-nodepools
     name_template: "{{ .ProjectName }}_{{ .Tag }}_{{ .Os }}_{{ .Arch }}"
     files:
       - LICENSE
     format_overrides:
     - goos: windows
-      format: zip
+      formats:
+        - zip
 
 checksum:
   name_template: "{{ .ProjectName }}_checksums.txt"
   algorithm: sha256
 
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 
 changelog:
   sort: asc
